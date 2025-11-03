@@ -1,0 +1,39 @@
+name: Pre-commit
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for pre-commit hooks
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: wagoid/commitlint-github-action@v6
+        with:
+          failOnWarnings: true # Strict mode
+          configFile: .github/.commitlintrc.mjs
+
+      - name: Run pre-commit on PRs
+        if: github.event_name == 'pull_request'
+        uses: pre-commit/action@v3.0.1
+
+      - name: Run pre-commit on push to main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: pre-commit/action@v3.0.1
+        env:
+          SKIP: no-commit-to-branch

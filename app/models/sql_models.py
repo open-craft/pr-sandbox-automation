@@ -4,6 +4,7 @@ Data models representing tables using SQLModel
 
 from datetime import datetime, timezone
 from sqlmodel import Field, SQLModel
+import uuid
 
 from app.helpers.constants import CheckRunStatus, SandboxStatus
 
@@ -26,6 +27,15 @@ class CheckRun(SQLModel, table=True):
     pr_url: str
     build_complete: bool = Field(default=False, index=True)
     deployment_status: CheckRunStatus = Field(index=True)
+
+
+class WorkflowLogsLink(SQLModel, table=True):
+    """
+    Data model to map workflow job logs url to unique identifier
+    """
+
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
+    url: str
 
 
 class SandboxAudit(SQLModel, table=True):

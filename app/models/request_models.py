@@ -132,12 +132,16 @@ class WorkflowJob(BaseModel):
             return match.group().strip()
 
     @property
-    def workflow_type(self):
+    def workflow_type(self) -> str:
         return self.name.split("/")[0].strip()
 
     @property
-    def workflow_job_type(self):
+    def workflow_job_type(self) -> str:
         return self.name.split("/")[1].strip()
+
+    @property
+    def logs_url(self) -> str:
+        return f"{self.url}/logs"
 
 
 class PullRequest(BaseModel):

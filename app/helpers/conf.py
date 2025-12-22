@@ -48,6 +48,14 @@ class Config(BaseSettings):
         description="Default branch of the edx-platform repository.",
     )
 
+    argocd_app_url: str = Field(
+        description="URL to view pods/jobs status in argocd for an application"
+    )
+
+    app_logs_url: str = Field(
+        description="The URL for this application for PR authors to view workflow job logs"
+    )
+
     log_level: str = Field(
         "INFO",
         description="Level of the logs.",

@@ -22,6 +22,7 @@ from app.models.request_models import (
     WorkflowJob,
     PullRequest,
 )
+from app.helpers.messages import get_starting_message
 
 
 logger = logging.getLogger(__name__)
@@ -47,7 +48,9 @@ class GitHubClient:
             },
         }
 
-    def _check_response_code(self, resp: Response, url: str) -> dict:
+    def _check_response_code(
+        self, resp: Response, url: str, expect_string_response: bool = False
+    ) -> dict | str:
         """
         Check the status code of response and raise approprate error codes.
         Raises ObjectDoesNotExist if Github returns a 404 response.
@@ -69,19 +72,25 @@ class GitHubClient:
         try:
             resp_data = resp.json()
         except requests.JSONDecodeError:
-            if resp.text:
+            if resp.text and expect_string_response:
+                resp_data = resp.text
+            else:
                 logging.error("Unparsable response from url %s : %s", url, resp.text)
-            resp_data = None
+                resp_data = None
         return resp_data
 
-    def _get_object(self, url: str, custom_params: dict = {}) -> dict:
+    def _get_object(
+        self, url: str, custom_params: dict = {}, expect_string_response: bool = False
+    ) -> dict:
         """
         Send a GET request to the provided URL, attaching custom params, and
         returns the deserialized object from the returned JSON.
         """
         merge_dicts(custom_params, self.api_params)
         resp = requests.get(url, **custom_params)
-        return self._check_response_code(resp, url)
+        return self._check_response_code(
+            resp, url, expect_string_response=expect_string_response
+        )
 
     def _post_request(
         self, url: str, data: dict = None, custom_params: dict = {}
@@ -234,6 +243,10 @@ class PRGithubClient(GitHubClient):
             {
                 "name": name,
                 "head_sha": head_sha,
+                "output": {
+                    "title": "Sandbox Deployment",
+                    "summary": get_starting_message(),
+                },
             },
         )
 
@@ -308,7 +321,11 @@ class ClusterGithubClient(GitHubClient):
         super().__init__(self.cluster_access_token.get_access_token())
 
     def _get_object(
-        self, url: str = None, path: str = "", custom_params: dict = {}
+        self,
+        url: str = None,
+        path: str = "",
+        custom_params: dict = {},
+        expect_string_response: bool = False,
     ) -> dict:
         """
         Send a GET request to the provided URL, attaching custom params, and
@@ -319,7 +336,11 @@ class ClusterGithubClient(GitHubClient):
         """
         self.token = self.cluster_access_token.get_access_token()
         api_url = url if url else f"{self.repo_url}{path}"
-        return super()._get_object(api_url, custom_params=custom_params)
+        return super()._get_object(
+            api_url,
+            custom_params=custom_params,
+            expect_string_response=expect_string_response,
+        )
 
     def _post_request(
         self,
@@ -434,3 +455,6 @@ class ClusterGithubClient(GitHubClient):
         """
         resp = self._get_object(url=jobs_url)
         return [WorkflowJob.model_validate(job) for job in resp["jobs"]]
+
+    def fetch_job_logs(self, logs_url: str) -> str:
+        return self._get_object(logs_url, expect_string_response=True)

@@ -478,3 +478,12 @@ class ClusterGithubClient(GitHubClient):
 
     def fetch_job_logs(self, logs_url: str) -> str:
         return self._get_object(logs_url, expect_string_response=True)
+
+    def trigger_workflow_rerun(self, rerun_url: str) -> None:
+        """
+        Trigger Workflow Rerun
+
+        Args:
+            rerun_url (str): Workflow rerun url
+        """
+        self._post_request(url=rerun_url)

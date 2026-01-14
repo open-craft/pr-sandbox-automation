@@ -240,6 +240,7 @@ def post_checkrun_updates(
     db_session: DBSession,
     in_progress: bool = True,
     failed: bool = False,
+    rerun: bool = False,
 ) -> None:
     """
     Post updates to checkruns based on workflow run status.
@@ -259,7 +260,7 @@ def post_checkrun_updates(
     # is only updated once ArgoCD sync is completed successfully.
     checkrun_status = CheckRunStatus.IN_PROGRESS
     checkrun_conclusion = None
-    if not in_progress and failed:
+    if not in_progress and failed and not rerun:
         checkrun_status = CheckRunStatus.COMPLETE
         checkrun_conclusion = CheckRunStatus.FAILURE
 
@@ -363,7 +364,12 @@ def handle_workflow_run(
                 failed=True,
             )
     else:
+        rerun = False
         # Handle failed workflow runs
+        if workflow_run.attempt < config.max_run_attempt:
+            rerun = True
+            sandbox.trigger_workflow_rerun(workflow_run.id, workflow_run.rerun_url)
+
         post_checkrun_updates(
             check_run,
             sandbox,
@@ -372,6 +378,7 @@ def handle_workflow_run(
             db_session,
             in_progress=False,
             failed=True,
+            rerun=rerun,
         )
 
 

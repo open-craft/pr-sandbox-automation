@@ -177,7 +177,7 @@ def delete_instance(
 
     sandbox = Sandbox(pull_request.sandbox_name)
     # Cancel any existing workflow runs for this sandbox first to avoid merge conflicts
-    sandbox.cancel_any_existing_runs()
+    sandbox.cancel_any_existing_runs(db_session)
     sandbox.trigger_delete()
 
     _sandbox_audit_log(pull_request, SandboxStatus.DESTROYED, db_session)
@@ -221,6 +221,7 @@ def post_checkrun_updates(
     summary = get_workflow_run_summary(
         workflow_jobs,
         workflow_type,
+        db_session=db_session,
         conclusion=workflow_run.conclusion,
         in_progress=in_progress,
         failed=failed,
@@ -347,21 +348,41 @@ def handle_workflow_run(
 
 
 def handle_argocd(
-    check_run: CheckRun, argocd_state: ArgoCDSyncStatus, db_session: DBSession
+    check_run: CheckRun,
+    application_name: str,
+    argocd_state: ArgoCDSyncStatus,
+    db_session: DBSession,
 ) -> None:
     """
     Handle ArgoCD sync events notifications.
     """
+    sandbox = Sandbox(check_run.sandbox_name)
+    sandbox_config = sandbox.tutor_config.content_as_dict
     if argocd_state == ArgoCDSyncStatus.RUNNING:
-        summary = get_argocd_run_summary(in_progress=True, failed=False)
+        summary = get_argocd_run_summary(
+            in_progress=True,
+            failed=False,
+            sandbox_config=sandbox_config,
+            application_name=application_name,
+        )
         checkrun_status = CheckRunStatus.IN_PROGRESS
         checkrun_conclusion = None
     elif argocd_state == ArgoCDSyncStatus.SUCCEEDED:
-        summary = get_argocd_run_summary(in_progress=False, failed=False)
+        summary = get_argocd_run_summary(
+            in_progress=False,
+            failed=False,
+            sandbox_config=sandbox_config,
+            application_name=application_name,
+        )
         checkrun_status = CheckRunStatus.COMPLETE
         checkrun_conclusion = CheckRunStatus.SUCCESS
     else:
-        summary = get_argocd_run_summary(in_progress=False, failed=True)
+        summary = get_argocd_run_summary(
+            in_progress=False,
+            failed=True,
+            sandbox_config=sandbox_config,
+            application_name=application_name,
+        )
         checkrun_status = CheckRunStatus.COMPLETE
         checkrun_conclusion = CheckRunStatus.FAILURE
 

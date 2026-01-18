@@ -42,7 +42,7 @@ services:
       - pr-sandbox-mysql-connection-string
       - pr-sandbox-argocd-webhook-auth
     ports:
-      - "8000:8000"
+      - "8900:8900"
     volumes:
       - .:/app
 

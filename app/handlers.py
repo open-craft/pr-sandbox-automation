@@ -4,9 +4,12 @@ Handler for Webhook Requests
 
 import logging
 from fastapi import Depends, APIRouter, Header, BackgroundTasks
+from fastapi.responses import PlainTextResponse
 from typing import Annotated
+import uuid
 
 from app.core.check_runs import fetch_checkrun
+from app.core.sandbox import fetch_job_logs
 from app.core.webhook_actions import (
     create_or_update_instance,
     delete_instance,
@@ -42,6 +45,11 @@ argocd_webhook_router = APIRouter(
     },
 )
 
+web_router = APIRouter(
+    prefix="/web",
+    tags=["web"],
+)
+
 
 def handle_github_webhook(
     github_event: GithubEventTypes,
@@ -58,11 +66,14 @@ def handle_github_webhook(
         db_session (SessionDep): DB Session specific to each request.
         background_tasks (BackgroundTasks): BackgroundTasks object to run follow-actions for webhook requests.
     """
-    logger.info(
-        "Handling %s github event for %s action", github_event, request.github_action
-    )
     match github_event, request.github_action:
         case GithubEventTypes.PULL_REQUEST, GithubActionTypes.SYNCHRONIZE:
+            logger.info(
+                "Handling %s github event for %s action for sandbox %s",
+                github_event,
+                request.github_action,
+                request.pull_request.sandbox_name,
+            )
             background_tasks.add_task(
                 create_or_update_instance,
                 request.repository_url,
@@ -71,6 +82,12 @@ def handle_github_webhook(
                 db_session,
             )
         case GithubEventTypes.PULL_REQUEST, GithubActionTypes.CLOSED:
+            logger.info(
+                "Handling %s github event for %s action for sandbox %s",
+                github_event,
+                request.github_action,
+                request.pull_request.sandbox_name,
+            )
             background_tasks.add_task(
                 delete_instance,
                 request.repository_url,
@@ -78,6 +95,12 @@ def handle_github_webhook(
                 db_session,
             )
         case GithubEventTypes.PULL_REQUEST, GithubActionTypes.REOPENED:
+            logger.info(
+                "Handling %s github event for %s action for sandbox %s",
+                github_event,
+                request.github_action,
+                request.pull_request.sandbox_name,
+            )
             background_tasks.add_task(
                 create_or_update_instance,
                 request.repository_url,
@@ -86,6 +109,12 @@ def handle_github_webhook(
                 db_session,
             )
         case GithubEventTypes.PULL_REQUEST, GithubActionTypes.LABELED:
+            logger.info(
+                "Handling %s github event for %s action for sandbox %s",
+                github_event,
+                request.github_action,
+                request.pull_request.sandbox_name,
+            )
             background_tasks.add_task(
                 create_or_update_instance,
                 request.repository_url,
@@ -94,6 +123,12 @@ def handle_github_webhook(
                 db_session,
             )
         case GithubEventTypes.PULL_REQUEST, GithubActionTypes.UNLABELED:
+            logger.info(
+                "Handling %s github event for %s action for sandbox %s",
+                github_event,
+                request.github_action,
+                request.pull_request.sandbox_name,
+            )
             background_tasks.add_task(
                 delete_instance,
                 request.repository_url,
@@ -101,6 +136,11 @@ def handle_github_webhook(
                 db_session,
             )
         case GithubEventTypes.CHECK_RUN | GithubEventTypes.CHECK_SUITE, _:
+            logger.info(
+                "Handling %s github event for %s action",
+                github_event,
+                request.github_action,
+            )
             background_tasks.add_task(
                 fetch_pr_and_update_instance,
                 request.check_suite_id,
@@ -109,6 +149,12 @@ def handle_github_webhook(
                 db_session,
             )
         case GithubEventTypes.WORKFLOW_RUN, _:
+            logger.info(
+                "Handling %s github event for %s action for sandbox %s",
+                github_event,
+                request.github_action,
+                request.workflow_run.sandbox_name,
+            )
             background_tasks.add_task(
                 handle_workflow_run,
                 request.github_action,
@@ -138,7 +184,7 @@ def github_handler(
 
 
 @argocd_webhook_router.post("/")
-async def argo_handler(
+def argo_handler(
     request: ArgoWebhookRequest,
     db_session: SessionDep,
     background_tasks: BackgroundTasks,
@@ -162,7 +208,26 @@ async def argo_handler(
         request.sandbox_name,
         request.state,
     )
-    background_tasks.add_task(handle_argocd, check_run, request.state, db_session)
+    background_tasks.add_task(
+        handle_argocd, check_run, request.application, request.state, db_session
+    )
     return {
         "event": "ArgoCD Sync",
     }
+
+
+@web_router.get("/logs/{job_uuid}", response_class=PlainTextResponse)
+def web_handler(
+    job_uuid: uuid.UUID,
+    db_session: SessionDep,
+) -> str:
+    """
+    Handler for get job logs request
+    """
+    logger.info("Received request to fetch logs for job with UUID %s", job_uuid)
+    try:
+        return fetch_job_logs(job_uuid, db_session)
+    except DBOperationException:
+        raise ActiveCheckrunNotFoundException(
+            f"No matching job log url found for UUID {job_uuid}"
+        )

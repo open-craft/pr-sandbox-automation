@@ -11,4 +11,4 @@ WORKDIR /app
 RUN uv sync
 
 # Run the application.
-CMD ["uv", "run", "fastapi", "dev", "app/main.py", "--host", "0.0.0.0"]
+CMD ["uv", "run", "fastapi", "dev", "app/main.py", "--host", "0.0.0.0", "--port", "8900"]

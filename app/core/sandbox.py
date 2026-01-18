@@ -4,6 +4,8 @@ This module provides the Sandbox class with a set of methods to trigger and fetc
 
 import json
 import logging
+import uuid
+from sqlmodel import select
 
 from app.core.github import ClusterGithubClient
 from app.helpers.constants import (
@@ -13,14 +15,31 @@ from app.helpers.constants import (
 from app.helpers.db_utils import DBSession
 from app.helpers.exceptions import ClusterWorkflowNotFoundException
 from app.helpers.utils import get_secret
-from app.models.request_models import Workflow, WorkflowJob
-from app.models.sql_models import CancelledRun
+from app.models.request_models import Workflow, WorkflowJob, GithubFile
+from app.models.sql_models import CancelledRun, WorkflowLogsLink
 
 logger = logging.getLogger(__name__)
 
 cluster_github_client = ClusterGithubClient(
     get_secret("pr-sandbox-cluster-installation-id")
 )
+
+
+def fetch_job_logs(job_uuid: uuid.UUID, db_session: DBSession) -> str:
+    """
+    Fetches job log for the given job uuid.
+
+    Args:
+        db_session (DBSession): The DB Session
+        uuid (str): UUID correspondinvg to the job log
+
+    Returns:
+        str: Job logs
+    """
+    logger.debug("Fetching workflow job log with uuid %s", job_uuid)
+    query = select(WorkflowLogsLink).where(WorkflowLogsLink.id == job_uuid)
+    logs_link: WorkflowLogsLink = db_session.fetch_one(query)
+    return cluster_github_client.fetch_job_logs(logs_link.url)
 
 
 class Sandbox:
@@ -30,12 +49,15 @@ class Sandbox:
         self.in_progress_workflow_runs = None
 
     @property
+    def tutor_config(self) -> GithubFile | None:
+        return cluster_github_client.get_instance_config(self.sandbox_name)
+
+    @property
     def exists(self) -> bool:
         """
         Checks if the sandbox exists in cluster.
         """
-        tutor_config = cluster_github_client.get_instance_config(self.sandbox_name)
-        return tutor_config is not None
+        return self.tutor_config is not None
 
     def _get_workflow(self, workflow_type: WorkflowType) -> Workflow:
         """

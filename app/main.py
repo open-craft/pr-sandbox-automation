@@ -5,7 +5,7 @@ Entry point for FastAPI
 import logging
 from fastapi import FastAPI
 
-from app.webhook_handler import github_webhook_router, argocd_webhook_router
+from app.handlers import github_webhook_router, argocd_webhook_router, web_router
 from app.helpers.conf import config
 
 if not logging.getLogger().hasHandlers():
@@ -21,3 +21,4 @@ app = FastAPI(
 )
 app.include_router(github_webhook_router)
 app.include_router(argocd_webhook_router)
+app.include_router(web_router)

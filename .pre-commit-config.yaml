@@ -19,12 +19,11 @@ repos:
       - id: check-case-conflict
       - id: check-executables-have-shebangs
       - id: check-shebang-scripts-are-executable
-        exclude: ^cluster-template/phd-\{\{cookiecutter\.cluster_slug_normalized\}\}-cluster/activate$
 
       # Check JSON/YAML
       - id: check-yaml
         args: [--allow-multiple-documents]
-        exclude: ^cluster-template/phd-\{\{cookiecutter\.cluster_slug_normalized\}\}-cluster/.github/workflows/(build|build-all|create-instance|delete-instance).yml$
+        exclude: ^charts/pr-sandbox-automation/templates/.*\.yaml$
       - id: check-json
       - id: pretty-format-json
         args: [--no-sort-keys]
@@ -60,11 +59,11 @@ repos:
       # Run the formatter.
       - id: ruff-format
 
-  # # Check Markdown Formatting
-  # - repo: https://github.com/DavidAnson/markdownlint-cli2
-  #   rev: v0.20.0
-  #   hooks:
-  #     - id: markdownlint-cli2
+  # Check Markdown Formatting
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.20.0
+    hooks:
+      - id: markdownlint-cli2
 
   # Check Shell Formatting
   - repo: https://github.com/shellcheck-py/shellcheck-py

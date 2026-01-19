@@ -50,6 +50,11 @@ web_router = APIRouter(
     tags=["web"],
 )
 
+system_router = APIRouter(
+    prefix="/system",
+    tags=["system"],
+)
+
 
 def handle_github_webhook(
     github_event: GithubEventTypes,
@@ -231,3 +236,11 @@ def web_handler(
         raise ActiveCheckrunNotFoundException(
             f"No matching job log url found for UUID {job_uuid}"
         )
+
+
+@system_router.get("/healthz")
+def system_healthz() -> dict:
+    """
+    Health check for the system
+    """
+    return {"status": "ok"}

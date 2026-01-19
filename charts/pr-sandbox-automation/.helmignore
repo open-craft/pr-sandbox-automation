@@ -1,0 +1,13 @@
+.git
+.gitignore
+.DS_Store
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.ruff_cache
+.pytest_cache
+dev
+Dockerfile
+Dockerfile.dev
+docker-compose.yml

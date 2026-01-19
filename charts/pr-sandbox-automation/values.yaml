@@ -1,0 +1,121 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/open-craft/pr-sandbox-automation
+  tag: ""
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: false
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  fsGroup: 10001
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+  runAsNonRoot: true
+  runAsUser: 10001
+
+service:
+  type: ClusterIP
+  port: 8900
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: ""
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []
+
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+env:
+  PR_SANDBOX_GITHUB_APP_IDENTIFIER: ""
+  PR_SANDBOX_CLUSTER_GITHUB_REPO_URL: ""
+  PR_SANDBOX_ARGOCD_APP_URL: ""
+  PR_SANDBOX_APP_LOGS_URL: ""
+  PR_SANDBOX_PR_LABEL: "create-sandbox"
+  PR_SANDBOX_DEFAULT_PLATFORM_URL: "https://github.com/openedx/edx-platform.git"
+  PR_SANDBOX_DEFAULT_PLATFORM_BRANCH: "master"
+  PR_SANDBOX_LOG_LEVEL: "INFO"
+  PR_SANDBOX_DB_DEBUG_LOGGING: "false"
+
+extraEnv: []
+
+secretMount:
+  mountPath: /var/run/secrets/pr-sandbox
+
+secretMounts:
+  - secretName: pr-sandbox-github-webhook-secret
+    items:
+      - key: pr-sandbox-github-webhook-secret
+        path: pr-sandbox-github-webhook-secret
+  - secretName: pr-sandbox-github-private-key
+    items:
+      - key: pr-sandbox-github-private-key
+        path: pr-sandbox-github-private-key
+  - secretName: pr-sandbox-pr-installation-id
+    items:
+      - key: pr-sandbox-pr-installation-id
+        path: pr-sandbox-pr-installation-id
+  - secretName: pr-sandbox-cluster-installation-id
+    items:
+      - key: pr-sandbox-cluster-installation-id
+        path: pr-sandbox-cluster-installation-id
+  - secretName: pr-sandbox-mysql-connection-string
+    items:
+      - key: pr-sandbox-mysql-connection-string
+        path: pr-sandbox-mysql-connection-string
+  - secretName: pr-sandbox-argocd-webhook-auth
+    items:
+      - key: pr-sandbox-argocd-webhook-auth
+        path: pr-sandbox-argocd-webhook-auth
+
+probes:
+  enabled: true
+  liveness:
+    initialDelaySeconds: 10
+    periodSeconds: 20
+    timeoutSeconds: 2
+    failureThreshold: 3
+  readiness:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 2
+    failureThreshold: 3
+
+mysql:
+  enabled: false
+  auth:
+    database: pr_sandbox
+    username: pr_sandbox_user
+    password: ""
+  primary:
+    persistence:
+      enabled: true
+  connectionSecret:
+    create: true
+    name: pr-sandbox-mysql-connection-string
+    key: pr-sandbox-mysql-connection-string
+    host: ""
+    port: 3306

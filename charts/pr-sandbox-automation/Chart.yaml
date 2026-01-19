@@ -1,0 +1,11 @@
+apiVersion: v2
+name: pr-sandbox-automation
+description: Automatically manage Open edX sandbox instances for PRs
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+dependencies:
+  - name: mysql
+    version: 9.14.1
+    repository: https://charts.bitnami.com/bitnami
+    condition: mysql.enabled

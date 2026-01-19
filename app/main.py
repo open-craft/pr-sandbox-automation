@@ -5,7 +5,12 @@ Entry point for FastAPI
 import logging
 from fastapi import FastAPI
 
-from app.handlers import github_webhook_router, argocd_webhook_router, web_router
+from app.handlers import (
+    github_webhook_router,
+    argocd_webhook_router,
+    web_router,
+    system_router,
+)
 from app.helpers.conf import config
 
 if not logging.getLogger().hasHandlers():
@@ -19,6 +24,8 @@ if not logging.getLogger().hasHandlers():
 app = FastAPI(
     title="PR Sandbox Automation", description="Automatically manage sandboxes for PRs"
 )
+
+app.include_router(system_router)
 app.include_router(github_webhook_router)
 app.include_router(argocd_webhook_router)
 app.include_router(web_router)

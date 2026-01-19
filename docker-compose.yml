@@ -29,7 +29,9 @@ services:
 
   dev-app:
     container_name: pr-sandbox-automation-dev-app
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     env_file:
       - dev/dev.env
     depends_on:

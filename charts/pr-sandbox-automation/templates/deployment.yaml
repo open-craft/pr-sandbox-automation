@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pr-sandbox-automation.fullname" . }}
+  labels:
+    {{- include "pr-sandbox-automation.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "pr-sandbox-automation.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "pr-sandbox-automation.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "pr-sandbox-automation.serviceAccountName" . }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ default .Chart.AppVersion .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          env:
+            - name: KUBERNETES_SECRET_DIR
+              value: {{ .Values.secretMount.mountPath | quote }}
+            {{- range $name, $value := .Values.env }}
+            - name: {{ $name }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- if .Values.probes.enabled }}
+          livenessProbe:
+            httpGet:
+              path: /system/healthz
+              port: http
+            initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.liveness.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.liveness.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: /system/healthz
+              port: http
+            initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.readiness.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.readiness.failureThreshold }}
+          {{- end }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            {{- if .Values.secretMounts }}
+            - name: app-secrets
+              mountPath: {{ .Values.secretMount.mountPath | quote }}
+              readOnly: true
+            {{- end }}
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        {{- if .Values.secretMounts }}
+        - name: app-secrets
+          projected:
+            sources:
+              {{- range .Values.secretMounts }}
+              - secret:
+                  name: {{ .secretName }}
+                  {{- if .items }}
+                  items:
+                    {{- toYaml .items | nindent 20 }}
+                  {{- end }}
+              {{- end }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

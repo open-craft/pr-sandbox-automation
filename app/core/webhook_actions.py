@@ -251,8 +251,10 @@ def post_checkrun_updates(
         workflow_type,
         db_session=db_session,
         conclusion=workflow_run.conclusion,
+        attempt=workflow_run.attempt,
         in_progress=in_progress,
         failed=failed,
+        rerun=rerun,
     )
 
     # Check run can only be in-progress or completed as failed.

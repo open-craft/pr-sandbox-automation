@@ -13,7 +13,7 @@ from app.core.check_runs import (
     fetch_checkrun_pr,
     fetch_checkrun,
 )
-from app.core.sandbox import Sandbox
+from app.core.sandbox import Sandbox, fetch_instance_list
 from app.helpers.conf import config
 from app.helpers.constants import (
     CheckRunStatus,
@@ -28,8 +28,12 @@ from app.helpers.constants import (
     WorkFlowConclusion,
 )
 from app.helpers.db_utils import DBSession
-from app.helpers.exceptions import ActiveCheckrunNotFoundException, DBOperationException
-from app.helpers.messages import get_workflow_run_summary, get_argocd_run_summary
+from app.helpers.exceptions import DBOperationException
+from app.helpers.messages import (
+    get_workflow_run_summary,
+    get_argocd_run_summary,
+    get_max_sandboxes_summary,
+)
 from app.helpers.utils import merge_dicts
 from app.models.request_models import PullRequest, WorkflowRun
 from app.models.sql_models import CheckRun, SandboxAudit, CancelledRun
@@ -125,6 +129,14 @@ def _create_new_instance(
     _sandbox_audit_log(pull_request, SandboxStatus.CREATED, db_session)
 
 
+def is_max_instances_exceeded() -> bool:
+    """
+    Check if the current active instance count has hit the upper limit.
+    """
+    instaces = fetch_instance_list()
+    return len(instaces) >= config.max_sandbox_count
+
+
 def create_or_update_instance(
     repository_url: str, head_sha: str, pull_request: PullRequest, db_session: DBSession
 ) -> None:
@@ -140,7 +152,7 @@ def create_or_update_instance(
     # Cancel any existing check runs for this sandbox before triggering a new one
     cancel_existing_pr_checkruns(repository_url, pull_request.sandbox_name, db_session)
 
-    create_new_check_run(
+    check_run = create_new_check_run(
         commit_sha=head_sha,
         repo_url=repository_url,
         sandbox_name=pull_request.sandbox_name,
@@ -157,6 +169,21 @@ def create_or_update_instance(
             # Cancel any existing workflow runs for this sandbox first to avoid merge conflicts
             sandbox.cancel_any_existing_runs(db_session)
             _update_instance(pull_request, sandbox)
+        elif is_max_instances_exceeded():
+            logger.info(
+                "Sandbox %s cannot be created since max sandbox count exceeded",
+                sandbox.sandbox_name,
+            )
+            summary = get_max_sandboxes_summary()
+            checkrun_status = CheckRunStatus.COMPLETE
+            checkrun_conclusion = CheckRunStatus.FAILURE
+            update_checkrun(
+                check_run,
+                summary,
+                db_session,
+                status=checkrun_status,
+                conclusion=checkrun_conclusion,
+            )
         else:
             _create_new_instance(pull_request, sandbox, db_session)
 
@@ -297,9 +324,10 @@ def handle_workflow_run(
         )
         sandbox = Sandbox(workflow_run.sandbox_name)
     except DBOperationException:
-        raise ActiveCheckrunNotFoundException(
-            f"Active checkrun for sandbox {workflow_run.sandbox_name} not found"
+        logger.info(
+            "Active checkrun for sandbox %s not found", workflow_run.sandbox_name
         )
+        return
 
     if github_action == GithubActionTypes.IN_PROGRESS:
         post_checkrun_updates(

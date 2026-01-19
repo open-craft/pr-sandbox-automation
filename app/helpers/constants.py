@@ -258,8 +258,6 @@ WORKFLOW_HEADERS = {
     WorkflowType.BUILD_ALL_IMAGES: "Building Service Images",
 }
 
-CHECKRUN_CANCELLED_MESSAGE = "Sandbox Deployment has been cancelled"
-
 
 class WorkFlowStatus(StrEnum):
     QUEUED = "queued"

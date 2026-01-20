@@ -5,6 +5,7 @@ The GitHub API is used to retrieve information about pull requests, create
 and update check runs, trigger workflows and fetch workflow logs.
 """
 
+import copy
 from datetime import datetime, timedelta, timezone
 import jwt
 import logging
@@ -86,8 +87,9 @@ class GitHubClient:
         Send a GET request to the provided URL, attaching custom params, and
         returns the deserialized object from the returned JSON.
         """
-        merge_dicts(custom_params, self.api_params)
-        resp = requests.get(url, **custom_params)
+        api_params = copy.deepcopy(self.api_params)
+        merge_dicts(api_params, custom_params)
+        resp = requests.get(url, **api_params)
         return self._check_response_code(
             resp, url, expect_string_response=expect_string_response
         )
@@ -373,13 +375,13 @@ class ClusterGithubClient(GitHubClient):
         self.token = self.cluster_access_token.get_access_token()
         return super()._patch_request(url, data, custom_params=custom_params)
 
-    def get_instance_config(self, instance_name: str) -> GithubFile | None:
+    def _get_repo_content(self, path) -> GithubFile | None:
         """
-        Returns the instance config from the PHD cluster repository.
+        Returns file or directory content form the PHD cluster repo.
         """
         try:
             file_info = self._get_object(
-                path=f"/contents/instances/{instance_name}/config.yml?ref=main",
+                path=path,
                 custom_params={
                     "headers": {
                         "Accept": "application/vnd.github.object+json",
@@ -390,6 +392,24 @@ class ClusterGithubClient(GitHubClient):
             return None
 
         return GithubFile.model_validate(file_info)
+
+    def get_directory_content(self, path: str) -> list[GithubFile] | None:
+        """
+        Returns the contents of given directory path.
+        """
+        dir_info = self._get_repo_content(path)
+        if dir_info and dir_info.type == "dir":
+            return dir_info.entries
+        return None
+
+    def get_file_content(self, path: str) -> GithubFile | None:
+        """
+        Returns the contents of given file path.
+        """
+        file_info = self._get_repo_content(path)
+        if file_info and file_info.type == "file":
+            return file_info
+        return None
 
     def get_workflow_list(self) -> list[Workflow]:
         """

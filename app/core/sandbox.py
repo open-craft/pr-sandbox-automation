@@ -42,6 +42,19 @@ def fetch_job_logs(job_uuid: uuid.UUID, db_session: DBSession) -> str:
     return cluster_github_client.fetch_job_logs(logs_link.url)
 
 
+def fetch_instance_list() -> list[GithubFile]:
+    """
+    Fetches the list of instances in the cluster
+
+    Returns:
+        list[GithubFile]: List of instance directories
+    """
+    directory_contents = cluster_github_client.get_directory_content(
+        path="/contents/instances?ref=main"
+    )
+    return [instance for instance in directory_contents if instance.type == "dir"]
+
+
 class Sandbox:
     def __init__(self, sandbox_name: str):
         self.sandbox_name = sandbox_name
@@ -50,7 +63,9 @@ class Sandbox:
 
     @property
     def tutor_config(self) -> GithubFile | None:
-        return cluster_github_client.get_instance_config(self.sandbox_name)
+        return cluster_github_client.get_file_content(
+            path=f"/contents/instances/{self.sandbox_name}/config.yml?ref=main"
+        )
 
     @property
     def exists(self) -> bool:

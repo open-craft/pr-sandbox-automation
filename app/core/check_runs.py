@@ -25,7 +25,7 @@ def create_new_check_run(
     sandbox_name: str,
     pr_url: str,
     db_session: DBSession,
-) -> int:
+) -> CheckRun:
     """
     Creates a new check run and adds a new entry in DB.
 
@@ -57,7 +57,7 @@ def create_new_check_run(
     )
     db_session.add_or_update(check_run)
 
-    return create_response["id"]
+    return check_run
 
 
 def update_checkrun(

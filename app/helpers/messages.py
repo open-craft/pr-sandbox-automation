@@ -1,6 +1,5 @@
 from app.helpers.conf import config
 from app.helpers.constants import (
-    CHECKRUN_CANCELLED_MESSAGE,
     WORKFLOW_EXECUTION_ORDER,
     WORKFLOW_HEADERS,
     WorkFlowStatus,
@@ -17,12 +16,12 @@ INDENT = "&nbsp;&nbsp;&nbsp;&nbsp;"
 
 def get_cancelled_checkrun_summary(existing_summary: str) -> str:
     """
-    Generate summary for canceller checkrun
+    Generate summary for cancelled checkrun
 
     Args:
         existing_summary (str): Existing summary to append to.
     """
-    return f"{existing_summary}\n\n### {CHECKRUN_CANCELLED_MESSAGE}"
+    return f"{existing_summary}\n\n### 🚫 Sandbox Deployment has been cancelled"
 
 
 def _status_tag(in_progress: bool, conclusion: str | None) -> str:
@@ -149,3 +148,10 @@ def get_argocd_run_summary(
         summary += f"\n{INDENT}📝 [Studio](https://{sandbox_config['CMS_HOST']})"
 
     return summary
+
+
+def get_max_sandboxes_summary() -> str:
+    """
+    Generate summary for sandbox cancelled due to max sandboxes
+    """
+    return "\n\n### 🚫 Sandbox deployment has been cancelled since the maximum number of sandboxes are already deployed"

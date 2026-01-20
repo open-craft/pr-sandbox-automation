@@ -42,10 +42,11 @@ class GithubFile(BaseModel):
     size: int
     url: str
     html_url: str
-    download_url: str
+    download_url: str | None = None
     type: str
-    encoding: str
-    content: bytes
+    encoding: str | None = None
+    content: bytes | None = None
+    entries: list["GithubFile"] = []
 
     model_config = ConfigDict(coerce_numbers_to_str=True)
 

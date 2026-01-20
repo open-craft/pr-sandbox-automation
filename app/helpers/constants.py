@@ -36,8 +36,8 @@ NAMED_RELEASE_TUTOR_REQUIREMENTS: dict[str, list[str]] = {
     ],
     NAMED_RELEASE_TEAK: [
         "pip install tutor-contrib-drydock",
-        "pip install tutor-mfe>=20,<21",
-        "pip install tutor-forum>=20,<21",
+        "pip install tutor-mfe==20.0.0",
+        "pip install tutor-forum==20.0.0",
         # "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove.git@main",
         "pip install git+https://github.com/hastexo/tutor-contrib-s3.git@v2.3.1",
         # "pip install git+https://github.com/openedx/openedx-k8s-harmony.git@main#egg=tutor-contrib-harmony&subdirectory=tutor-contrib-harmony-plugin",

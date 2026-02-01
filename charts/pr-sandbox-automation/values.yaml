@@ -90,6 +90,10 @@ secretMounts:
     items:
       - key: pr-sandbox-argocd-webhook-auth
         path: pr-sandbox-argocd-webhook-auth
+  - secretName: pr-sandbox-argocd-readonly-user-password
+    items:
+      - key: pr-sandbox-argocd-readonly-user-password
+        path: pr-sandbox-argocd-readonly-user-password
 
 probes:
   enabled: true

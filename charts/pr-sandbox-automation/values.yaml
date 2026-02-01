@@ -94,6 +94,10 @@ secretMounts:
     items:
       - key: pr-sandbox-argocd-readonly-user-password
         path: pr-sandbox-argocd-readonly-user-password
+  - secretName: pr-sandbox-extra-configs
+    items:
+      - key: pr-sandbox-extra-configs
+        path: pr-sandbox-extra-configs
 
 probes:
   enabled: true

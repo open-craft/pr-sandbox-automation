@@ -28,6 +28,7 @@ from app.helpers.constants import (
     WorkFlowConclusion,
 )
 from app.helpers.db_utils import DBSession
+from app.helpers.utils import get_secret
 from app.helpers.exceptions import DBOperationException
 from app.helpers.messages import (
     get_workflow_run_summary,
@@ -75,6 +76,10 @@ def _update_instance(pull_request: PullRequest, sandbox: Sandbox) -> None:
         "OPENEDX_COMMON_VERSION": pull_request.named_release.latest_common_version,
         "PICASSO_EXTRA_COMMANDS": pull_request.tutor_requirements,
     }
+
+    # Loads extra configs such as SMTP credentials which are not provided by the PHD stack yet
+    extra_configs_from_secrets = yaml.safe_load(get_secret("pr-sandbox-extra-configs"))
+    merge_dicts(instance_config, extra_configs_from_secrets)
 
     # Add custom MFE repo details for MFE PR
     if pull_request.repo_name.startswith(MFE_REPO_NAME_PREFIX):

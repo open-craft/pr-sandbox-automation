@@ -56,6 +56,11 @@ class Config(BaseSettings):
         description="The URL for this application for PR authors to view workflow job logs"
     )
 
+    max_run_attempt: int = Field(
+        2,
+        description="The maximum number of times a workflow run will be attempted.",
+    )
+
     max_sandbox_count: int = Field(
         30,
         description="The maximum number of active sandboxes allowed.",

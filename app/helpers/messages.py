@@ -77,6 +77,16 @@ def _next_steps_message(is_first_step: bool = False) -> str:
     return f"\n\n### ⏳⏳ *Waiting for status of {'first' if is_first_step else 'next'} steps*"
 
 
+def _rerun_message() -> str:
+    return "\n\n### 🔁 *Rerun triggered automatically for failed step(s). Waiting for status*"
+
+
+def _attempt_count_msg(attempt: int) -> str:
+    if attempt > 1:
+        return f" [Attempt {attempt}]"
+    return ""
+
+
 def get_starting_message() -> str:
     return _next_steps_message(is_first_step=True)
 
@@ -86,8 +96,10 @@ def get_workflow_run_summary(
     workflow_type: WorkflowType,
     db_session: DBSession | None = None,
     conclusion: str | None = None,
+    attempt: int = 1,
     in_progress: bool = False,
     failed: bool = False,
+    rerun: bool = False,
 ) -> str:
     """
     Generate summary for workflow run events.
@@ -110,7 +122,7 @@ def get_workflow_run_summary(
         if workflow != workflow_type:
             summary += f"\n### {_get_run_status_emoji(False, WorkFlowConclusion.SUCCESS)} {WORKFLOW_HEADERS[workflow]}\n\n"
         else:
-            summary += f"\n### {_get_run_status_emoji(in_progress, conclusion)} {WORKFLOW_HEADERS[workflow_type]}\n"
+            summary += f"\n### {_get_run_status_emoji(in_progress, conclusion)} {WORKFLOW_HEADERS[workflow_type]}{_attempt_count_msg(attempt)}\n"
             # Update the status of individual jobs of the workflow run in progress
             for job in workflow_jobs:
                 job_in_progress = _check_job_in_progress(job.status)
@@ -123,6 +135,8 @@ def get_workflow_run_summary(
             # is fully deployed, based on the successful status of the last workflow run.
             if not in_progress and not failed:
                 summary += _next_steps_message()
+            elif rerun:
+                summary += _rerun_message()
             break
     return summary
 

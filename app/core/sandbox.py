@@ -170,6 +170,15 @@ class Sandbox:
             },
         )
 
+    def trigger_workflow_rerun(self, workflow_id, url) -> None:
+        """
+        Trigger workflow rerun
+        """
+        logger.info(
+            "Triggering re-run for workflow %s for %s", workflow_id, self.sandbox_name
+        )
+        cluster_github_client.trigger_workflow_rerun(url)
+
     def create_workflow_is_running(self) -> bool:
         """
         Checks if a create instance workflow is already running for this sandbox.

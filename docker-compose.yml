@@ -11,7 +11,10 @@ secrets:
     file: dev/secrets/pr-sandbox-mysql-connection-string
   pr-sandbox-argocd-webhook-auth:
     file: dev/secrets/pr-sandbox-argocd-webhook-auth
-
+  pr-sandbox-argocd-readonly-user-password:
+    file: dev/secrets/pr-sandbox-argocd-readonly-user-password
+  pr-sandbox-extra-configs:
+    file: dev/secrets/pr-sandbox-extra-configs
 
 services:
   dev-db:
@@ -43,6 +46,8 @@ services:
       - pr-sandbox-cluster-installation-id
       - pr-sandbox-mysql-connection-string
       - pr-sandbox-argocd-webhook-auth
+      - pr-sandbox-argocd-readonly-user-password
+      - pr-sandbox-extra-configs
     ports:
       - "8900:8900"
     volumes:

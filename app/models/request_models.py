@@ -333,3 +333,4 @@ class ArgoWebhookRequest(BaseModel):
         """
         if match := re.search(PR_SANDBOX_NAME_PATTERN, self.application):
             return match.group().strip()
+        return self.application

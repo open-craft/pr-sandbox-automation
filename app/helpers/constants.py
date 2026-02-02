@@ -52,12 +52,13 @@ NAMED_RELEASE_TUTOR_REQUIREMENTS: dict[str, list[str]] = {
     NAMED_RELEASE_ULMO: [
         "pip install tutor-contrib-drydock",
         # "git+https://github.com/overhangio/tutor.git@ulmo",
+        "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove@main",
         "pip install git+https://github.com/overhangio/tutor-mfe.git@ulmo",
         "pip install git+https://github.com/overhangio/tutor-forum.git@ulmo",
         # "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove.git@021249b92a1027792424206365786b22a3820cbb",  # change this when this issue is fixed https://forum.opencraft.com/t/the-future-of-simple-theme/1985/9?u=kaustav
-        "pip install git+https://github.com/open-craft/tutor-contrib-s3.git@kaustav/add_support_for_tutor_21",
+        # "pip install git+https://github.com/open-craft/tutor-contrib-s3.git@kaustav/add_support_for_tutor_21",
         # "pip install git+https://github.com/open-craft/openedx-k8s-harmony.git@kaustav/support_tutor_21#egg=tutor-contrib-harmony&subdirectory=tutor-contrib-harmony-plugin",
-        "tutor plugins enable drydock mfe forum s3",
+        "tutor plugins enable drydock mfe forum grove-mfes",
         # "tutor plugins enable grove",
         # "tutor plugins enable k8s_harmony",
         "tutor config save",
@@ -65,13 +66,13 @@ NAMED_RELEASE_TUTOR_REQUIREMENTS: dict[str, list[str]] = {
     NAMED_RELEASE_MASTER: [
         "pip install tutor-contrib-drydock",
         # "git+https://github.com/overhangio/tutor.git@main",
-        # "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove@kshitij/grove-tokens",
+        "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove@kaustav/phd",  # Temporary branch till tutor-contrib-grove is fully compatible with PHD stack
         "pip install git+https://github.com/overhangio/tutor-mfe.git@main",
         "pip install git+https://github.com/overhangio/tutor-forum.git@main",
         # "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove.git@main",
-        "pip install git+https://github.com/hastexo/tutor-contrib-s3.git@main",
+        # "pip install git+https://github.com/hastexo/tutor-contrib-s3.git@main",
         # "pip install git+https://github.com/openedx/openedx-k8s-harmony.git@main#egg=tutor-contrib-harmony&subdirectory=tutor-contrib-harmony-plugin",
-        "tutor plugins enable drydock mfe forum s3",
+        "tutor plugins enable drydock mfe forum grove-mfes grove-phd",
         # "tutor plugins enable grove-simple-theme",
         # "tutor plugins enable grove",
         # "tutor plugins enable k8s_harmony",

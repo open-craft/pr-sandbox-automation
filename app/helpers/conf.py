@@ -52,6 +52,11 @@ class Config(BaseSettings):
         description="URL to view pods/jobs status in argocd for an application"
     )
 
+    argocd_readonly_username: str = Field(
+        "sandboxuser",
+        description="Username of the read-only user for ArgoCD to be appended to checkrun logs",
+    )
+
     app_logs_url: str = Field(
         description="The URL for this application for PR authors to view workflow job logs"
     )

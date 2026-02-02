@@ -148,6 +148,7 @@ def get_argocd_run_summary(
         summary += "\n\nSandbox Links:"
         summary += f"\n{INDENT}🎓 [LMS](https://{sandbox_config['LMS_HOST']})"
         summary += f"\n{INDENT}📝 [Studio](https://{sandbox_config['CMS_HOST']})"
+        summary += f"\n{INDENT}🔐 Login: `openedx` / `openedx`"
 
     return summary
 

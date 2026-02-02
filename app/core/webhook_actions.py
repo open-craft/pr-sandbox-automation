@@ -75,6 +75,7 @@ def _update_instance(pull_request: PullRequest, sandbox: Sandbox) -> None:
     instance_config = {
         "OPENEDX_COMMON_VERSION": pull_request.named_release.latest_common_version,
         "PICASSO_EXTRA_COMMANDS": pull_request.tutor_requirements,
+        "GROVE_CREATE_DEMO_USER": True,
     }
 
     # Loads extra configs such as SMTP credentials which are not provided by the PHD stack yet

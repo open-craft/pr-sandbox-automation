@@ -66,7 +66,7 @@ NAMED_RELEASE_TUTOR_REQUIREMENTS: dict[str, list[str]] = {
     NAMED_RELEASE_MASTER: [
         "pip install tutor-contrib-drydock",
         # "git+https://github.com/overhangio/tutor.git@main",
-        "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove@kaustav/phd",  # Temporary branch till tutor-contrib-grove is fully compatible with PHD stack
+        "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove@main",
         "pip install git+https://github.com/overhangio/tutor-mfe.git@main",
         "pip install git+https://github.com/overhangio/tutor-forum.git@main",
         # "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove.git@main",

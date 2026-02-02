@@ -173,7 +173,10 @@ def validate_request(github_event: GithubEventTypes, request: GithubWebhookReque
         UnactionableRequestException: Raised with appropriate error details
                                         if validation fails.
     """
-    if request.installation_id != get_secret("pr-sandbox-pr-installation-id"):
+    if request.installation_id not in [
+        get_secret("pr-sandbox-pr-installation-id"),
+        get_secret("pr-sandbox-cluster-installation-id"),
+    ]:
         raise UnactionableRequestException("The provided installation id is invalid")
 
     _validate_request_actionable(github_event, request)

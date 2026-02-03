@@ -34,6 +34,7 @@ from app.helpers.messages import (
     get_workflow_run_summary,
     get_argocd_run_summary,
     get_max_sandboxes_summary,
+    get_generic_error_summary,
 )
 from app.helpers.utils import merge_dicts
 from app.models.request_models import PullRequest, WorkflowRun
@@ -41,6 +42,19 @@ from app.models.sql_models import CheckRun, SandboxAudit, CancelledRun
 
 
 logger = logging.getLogger(__name__)
+
+
+def _post_generic_error_message(check_run: CheckRun, db_session: DBSession) -> None:
+    summary = get_generic_error_summary()
+    checkrun_status = CheckRunStatus.COMPLETE
+    checkrun_conclusion = CheckRunStatus.FAILURE
+    update_checkrun(
+        check_run,
+        summary,
+        db_session,
+        status=checkrun_status,
+        conclusion=checkrun_conclusion,
+    )
 
 
 def _sandbox_audit_log(
@@ -166,32 +180,36 @@ def create_or_update_instance(
         db_session=db_session,
     )
 
-    sandbox = Sandbox(pull_request.sandbox_name)
+    try:
+        sandbox = Sandbox(pull_request.sandbox_name)
 
-    # Don't trigger any workflow if create instance workflow is already running
-    if not sandbox.create_workflow_is_running():
-        # If sandbox already exists update it, or create a new one
-        if sandbox.exists:
-            # Cancel any existing workflow runs for this sandbox first to avoid merge conflicts
-            sandbox.cancel_any_existing_runs(db_session)
-            _update_instance(pull_request, sandbox)
-        elif is_max_instances_exceeded():
-            logger.info(
-                "Sandbox %s cannot be created since max sandbox count exceeded",
-                sandbox.sandbox_name,
-            )
-            summary = get_max_sandboxes_summary()
-            checkrun_status = CheckRunStatus.COMPLETE
-            checkrun_conclusion = CheckRunStatus.FAILURE
-            update_checkrun(
-                check_run,
-                summary,
-                db_session,
-                status=checkrun_status,
-                conclusion=checkrun_conclusion,
-            )
-        else:
-            _create_new_instance(pull_request, sandbox, db_session)
+        # Don't trigger any workflow if create instance workflow is already running
+        if not sandbox.create_workflow_is_running():
+            # If sandbox already exists update it, or create a new one
+            if sandbox.exists:
+                # Cancel any existing workflow runs for this sandbox first to avoid merge conflicts
+                sandbox.cancel_any_existing_runs(db_session)
+                _update_instance(pull_request, sandbox)
+            elif is_max_instances_exceeded():
+                logger.info(
+                    "Sandbox %s cannot be created since max sandbox count exceeded",
+                    sandbox.sandbox_name,
+                )
+                summary = get_max_sandboxes_summary()
+                checkrun_status = CheckRunStatus.COMPLETE
+                checkrun_conclusion = CheckRunStatus.FAILURE
+                update_checkrun(
+                    check_run,
+                    summary,
+                    db_session,
+                    status=checkrun_status,
+                    conclusion=checkrun_conclusion,
+                )
+            else:
+                _create_new_instance(pull_request, sandbox, db_session)
+    except Exception as e:
+        _post_generic_error_message(check_run, db_session)
+        raise e
 
 
 def delete_instance(
@@ -338,30 +356,49 @@ def handle_workflow_run(
         )
         return
 
-    if github_action == GithubActionTypes.IN_PROGRESS:
-        post_checkrun_updates(
-            check_run, sandbox, workflow_run, workflow_type, db_session
-        )
-        return
+    try:
+        if github_action == GithubActionTypes.IN_PROGRESS:
+            post_checkrun_updates(
+                check_run, sandbox, workflow_run, workflow_type, db_session
+            )
+            return
 
-    if workflow_run.conclusion in WORKFLOW_SUCCESS_CONCLUSION:
-        trigger_next_workflow(workflow_type, check_run, sandbox, db_session)
-        post_checkrun_updates(
-            check_run,
-            sandbox,
-            workflow_run,
-            workflow_type,
-            db_session,
-            in_progress=False,
-        )
-    elif workflow_run.conclusion == WorkFlowConclusion.CANCELLED:
-        # Check if the workflow run cancellation was triggered
-        # intentionally by this app. If so, ignore it. If not,
-        # then update checkrun as failed.
-        try:
-            query = select(CancelledRun).where(CancelledRun.run_id == workflow_run.id)
-            db_session.fetch_one(query)
-        except DBOperationException:
+        if workflow_run.conclusion in WORKFLOW_SUCCESS_CONCLUSION:
+            trigger_next_workflow(workflow_type, check_run, sandbox, db_session)
+            post_checkrun_updates(
+                check_run,
+                sandbox,
+                workflow_run,
+                workflow_type,
+                db_session,
+                in_progress=False,
+            )
+        elif workflow_run.conclusion == WorkFlowConclusion.CANCELLED:
+            # Check if the workflow run cancellation was triggered
+            # intentionally by this app. If so, ignore it. If not,
+            # then update checkrun as failed.
+            try:
+                query = select(CancelledRun).where(
+                    CancelledRun.run_id == workflow_run.id
+                )
+                db_session.fetch_one(query)
+            except DBOperationException:
+                post_checkrun_updates(
+                    check_run,
+                    sandbox,
+                    workflow_run,
+                    workflow_type,
+                    db_session,
+                    in_progress=False,
+                    failed=True,
+                )
+        else:
+            rerun = False
+            # Handle failed workflow runs
+            if workflow_run.attempt < config.max_run_attempt:
+                rerun = True
+                sandbox.trigger_workflow_rerun(workflow_run.id, workflow_run.rerun_url)
+
             post_checkrun_updates(
                 check_run,
                 sandbox,
@@ -370,24 +407,11 @@ def handle_workflow_run(
                 db_session,
                 in_progress=False,
                 failed=True,
+                rerun=rerun,
             )
-    else:
-        rerun = False
-        # Handle failed workflow runs
-        if workflow_run.attempt < config.max_run_attempt:
-            rerun = True
-            sandbox.trigger_workflow_rerun(workflow_run.id, workflow_run.rerun_url)
-
-        post_checkrun_updates(
-            check_run,
-            sandbox,
-            workflow_run,
-            workflow_type,
-            db_session,
-            in_progress=False,
-            failed=True,
-            rerun=rerun,
-        )
+    except Exception as e:
+        _post_generic_error_message(check_run, db_session)
+        raise e
 
 
 def handle_argocd(

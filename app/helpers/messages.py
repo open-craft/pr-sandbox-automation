@@ -172,3 +172,10 @@ def get_max_sandboxes_summary() -> str:
     Generate summary for sandbox cancelled due to max sandboxes
     """
     return "\n\n### 🚫 Sandbox deployment has been cancelled since the maximum number of sandboxes are already deployed"
+
+
+def get_generic_error_summary() -> str:
+    """
+    Generate summary for generic error during sandbox deployment
+    """
+    return "\n\n### 🚫 Sandbox deployment failed due to an Internal Server Error. Please retry the deployment and if the issue persistes, please contact [#grove-pr-watcher](https://openedx.slack.com/archives/C05519HHZKM) slack channel."

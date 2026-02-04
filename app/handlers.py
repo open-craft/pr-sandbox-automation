@@ -179,6 +179,7 @@ def github_handler(
     """
     Github Webhook event handler
     """
+    logger.info(headers)
     github_event = headers.x_github_event
     validate_request(github_event, request)
     handle_github_webhook(github_event, request, db_session, background_tasks)

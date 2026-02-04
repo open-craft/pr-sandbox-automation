@@ -316,6 +316,8 @@ class GithubWebhookHeader(BaseModel):
 
     x_github_event: GithubEventTypes
     x_hub_signature_256: str
+    x_github_hook_id: str
+    x_github_delivery: str
 
 
 class ArgoWebhookRequest(BaseModel):

@@ -5,6 +5,7 @@ Handler for Webhook Requests
 import logging
 from fastapi import Depends, APIRouter, Header, BackgroundTasks
 from fastapi.responses import PlainTextResponse
+from redis import Redis
 from typing import Annotated
 import uuid
 
@@ -20,13 +21,20 @@ from app.core.webhook_actions import (
 from app.helpers.constants import GithubActionTypes, GithubEventTypes, CheckRunStatus
 from app.helpers.db_utils import SessionDep
 from app.helpers.exceptions import ActiveCheckrunNotFoundException, DBOperationException
-from app.helpers.validations import validate_signature, validate_request, validate_auth
+from app.helpers.utils import get_secret
+from app.helpers.validations import (
+    validate_signature,
+    validate_request,
+    validate_auth,
+    validate_request_not_duplicate,
+)
 from app.models.request_models import (
     GithubWebhookRequest,
     GithubWebhookHeader,
     ArgoWebhookRequest,
 )
 
+redis_client = Redis.from_url(get_secret("pr-sandbox-redis-connection-string"))
 logger = logging.getLogger(__name__)
 
 github_webhook_router = APIRouter(
@@ -181,6 +189,7 @@ def github_handler(
     """
     logger.info(headers)
     github_event = headers.x_github_event
+    validate_request_not_duplicate(headers.x_hub_signature_256, redis_client)
     validate_request(github_event, request)
     handle_github_webhook(github_event, request, db_session, background_tasks)
     return {

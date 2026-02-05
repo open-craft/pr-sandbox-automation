@@ -9,6 +9,8 @@ secrets:
     file: dev/secrets/pr-sandbox-cluster-installation-id
   pr-sandbox-mysql-connection-string:
     file: dev/secrets/pr-sandbox-mysql-connection-string
+  pr-sandbox-redis-connection-string:
+    file: dev/secrets/pr-sandbox-redis-connection-string
   pr-sandbox-argocd-webhook-auth:
     file: dev/secrets/pr-sandbox-argocd-webhook-auth
   pr-sandbox-argocd-readonly-user-password:
@@ -30,6 +32,12 @@ services:
     volumes:
       - db_data:/var/lib/mysql
 
+  dev-redis:
+    container_name: redis-dev
+    image: redis:8.4
+    ports:
+      - "6379:6379"
+
   dev-app:
     container_name: pr-sandbox-automation-dev-app
     build:
@@ -45,6 +53,7 @@ services:
       - pr-sandbox-pr-installation-id
       - pr-sandbox-cluster-installation-id
       - pr-sandbox-mysql-connection-string
+      - pr-sandbox-redis-connection-string
       - pr-sandbox-argocd-webhook-auth
       - pr-sandbox-argocd-readonly-user-password
       - pr-sandbox-extra-configs

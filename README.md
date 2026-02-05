@@ -80,6 +80,7 @@ Each secret should expose a key with the same name so it becomes a file in
 - `pr-sandbox-pr-installation-id`
 - `pr-sandbox-cluster-installation-id`
 - `pr-sandbox-mysql-connection-string`
+- `pr-sandbox-redis-connection-string`
 - `pr-sandbox-argocd-webhook-auth`
 - `pr-sandbox-argocd-readonly-user-password`
 - `pr-sandbox-extra-configs`

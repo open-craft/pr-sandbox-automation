@@ -72,11 +72,12 @@ NAMED_RELEASE_TUTOR_REQUIREMENTS: dict[str, list[str]] = {
         # "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove.git@main",
         # "pip install git+https://github.com/hastexo/tutor-contrib-s3.git@main",
         # "pip install git+https://github.com/openedx/openedx-k8s-harmony.git@main#egg=tutor-contrib-harmony&subdirectory=tutor-contrib-harmony-plugin",
-        "tutor plugins enable drydock mfe forum grove-mfes grove-config",
+        "tutor plugins enable drydock mfe forum grove-mfes grove-config grove-simple-theme",
         # "tutor plugins enable grove-simple-theme",
         # "tutor plugins enable grove",
         # "tutor plugins enable k8s_harmony",
         "tutor config save",
+        "tutor generate-tokens",
     ],
 }
 
@@ -317,4 +318,4 @@ CHECK_RUN_NAME = "sandbox_deployment"
 
 PR_SANDBOX_NAME_PATTERN = r"pr-\d*-[0-9a-f]{6}"
 
-DEDUPLICATION_TTL = 10
+DEDUPLICATION_TTL = 300

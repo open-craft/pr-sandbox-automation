@@ -6,6 +6,7 @@ from base64 import b64decode
 from fastapi import Request, HTTPException
 import hmac
 import hashlib
+from redis import Redis
 
 from app.helpers.conf import config
 from app.helpers.constants import (
@@ -17,11 +18,13 @@ from app.helpers.constants import (
     AUTHORIZATION_HEADER,
     AUTHORIZATION_PREFIX,
     WorkflowType,
+    DEDUPLICATION_TTL
 )
 from app.helpers.exceptions import UnactionableRequestException
 from app.helpers.utils import get_secret
 from app.models.request_models import GithubWebhookRequest
 
+redis_client = False
 
 async def validate_signature(request: Request):
     """
@@ -180,3 +183,9 @@ def validate_request(github_event: GithubEventTypes, request: GithubWebhookReque
         raise UnactionableRequestException("The provided installation id is invalid")
 
     _validate_request_actionable(github_event, request)
+
+
+def validate_request_not_duplicate(unique_id: str, redis_client: Redis):
+    is_unique = redis_client.set(unique_id, "1", nx=True, ex=DEDUPLICATION_TTL)
+    if not bool(is_unique):
+        raise UnactionableRequestException(f"The request with id {unique_id} is not unique")

@@ -86,6 +86,10 @@ secretMounts:
     items:
       - key: pr-sandbox-mysql-connection-string
         path: pr-sandbox-mysql-connection-string
+  - secretName: pr-sandbox-redis-connection-string
+    items:
+      - key: pr-sandbox-redis-connection-string
+        path: pr-sandbox-redis-connection-string
   - secretName: pr-sandbox-argocd-webhook-auth
     items:
       - key: pr-sandbox-argocd-webhook-auth

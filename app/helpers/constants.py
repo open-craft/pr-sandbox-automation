@@ -318,4 +318,4 @@ CHECK_RUN_NAME = "sandbox_deployment"
 
 PR_SANDBOX_NAME_PATTERN = r"pr-\d*-[0-9a-f]{6}"
 
-DEDUPLICATION_TTL = 40
+DEDUPLICATION_TTL = 30

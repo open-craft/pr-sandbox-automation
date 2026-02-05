@@ -24,8 +24,6 @@ from app.helpers.exceptions import UnactionableRequestException
 from app.helpers.utils import get_secret
 from app.models.request_models import GithubWebhookRequest
 
-redis_client = False
-
 
 async def validate_signature(request: Request):
     """

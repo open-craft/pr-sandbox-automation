@@ -22,7 +22,12 @@ from app.helpers.constants import GithubActionTypes, GithubEventTypes, CheckRunS
 from app.helpers.db_utils import SessionDep
 from app.helpers.exceptions import ActiveCheckrunNotFoundException, DBOperationException
 from app.helpers.utils import get_secret
-from app.helpers.validations import validate_signature, validate_request, validate_auth, validate_request_not_duplicate
+from app.helpers.validations import (
+    validate_signature,
+    validate_request,
+    validate_auth,
+    validate_request_not_duplicate,
+)
 from app.models.request_models import (
     GithubWebhookRequest,
     GithubWebhookHeader,

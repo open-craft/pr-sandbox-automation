@@ -18,13 +18,14 @@ from app.helpers.constants import (
     AUTHORIZATION_HEADER,
     AUTHORIZATION_PREFIX,
     WorkflowType,
-    DEDUPLICATION_TTL
+    DEDUPLICATION_TTL,
 )
 from app.helpers.exceptions import UnactionableRequestException
 from app.helpers.utils import get_secret
 from app.models.request_models import GithubWebhookRequest
 
 redis_client = False
+
 
 async def validate_signature(request: Request):
     """
@@ -188,4 +189,6 @@ def validate_request(github_event: GithubEventTypes, request: GithubWebhookReque
 def validate_request_not_duplicate(unique_id: str, redis_client: Redis):
     is_unique = redis_client.set(unique_id, "1", nx=True, ex=DEDUPLICATION_TTL)
     if not bool(is_unique):
-        raise UnactionableRequestException(f"The request with id {unique_id} is not unique")
+        raise UnactionableRequestException(
+            f"The request with id {unique_id} is not unique"
+        )

@@ -131,3 +131,27 @@ mysql:
     key: pr-sandbox-mysql-connection-string
     host: ""
     port: 3306
+
+redis:
+  enabled: false
+  architecture: standalone
+  auth:
+    enabled: true
+    password: ""
+  master:
+    persistence:
+      enabled: false
+      size: 1Gi
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "100m"
+      limits:
+        memory: "256Mi"
+        cpu: "200m"
+  connectionSecret:
+    create: true
+    name: pr-sandbox-redis-connection-string
+    key: pr-sandbox-redis-connection-string
+    host: ""
+    port: 6379

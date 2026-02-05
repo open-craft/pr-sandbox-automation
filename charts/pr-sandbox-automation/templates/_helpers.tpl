@@ -39,3 +39,11 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- printf "%s-mysql" .Release.Name -}}
 {{- end -}}
 {{- end -}}
+
+{{- define "pr-sandbox-automation.redisHost" -}}
+{{- if .Values.redis.connectionSecret.host -}}
+{{- .Values.redis.connectionSecret.host -}}
+{{- else -}}
+{{- printf "%s-redis-master" .Release.Name -}}
+{{- end -}}
+{{- end -}}

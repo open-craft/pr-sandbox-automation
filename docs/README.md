@@ -6,7 +6,7 @@
 ## Table of Contents
 
 - [Creating Sandbox](#creating-sandbox)
-- [Configuring Sandbox](#sandbox-configuration)
+- [Sandbox Configuration](#sandbox-configuration)
 - [Checking Sandbox Logs](#checking-sandbox-logs)
 - [Updating Sandbox](#updating-sandbox)
 - [Destroying and Recreating Sandbox](#destroying-and-recreating-sandboxes)
@@ -20,8 +20,9 @@
 >repo has the Github app installed. This is managed by the
 >[organization owners or repository admins](https://docs.github.com/en/apps/using-github-apps/installing-a-github-app-from-a-third-party#requirements-to-install-a-github-app).
 
-1. Optionally, add [configuration options](#custom-configuration) for your sandbox
-to the PR body.
+1. Sandboxes are provisioned with some [default configurations](#default-configurations).
+You can also add any [custom configurations](#custom-configuration) for your sandbox
+to the PR body as required.
 
 2. Add the `create-sandbox` label to your PR.
 
@@ -62,17 +63,17 @@ which named release of Open edX the PR is intended for. Certain things, such as
 `OPENEDX_COMMON_VERSION` and the release version of Tutor and its plugins, are
 configured based on this.
 
-For a PR to be recognized as targeting a named release, its target branch
+For a PR to be recognized as targeting a named release, its base branch
 should be of the format
 
     <release-prefix>/<named_release>.<version>
 
-`release/teak.3`, `release/ulmo` are examples of valid names of target branches.
+`release/teak.3`, `release/ulmo` are examples of valid names of base branches.
 
 > [!NOTE]
 > The automation app supports only the latest named release to be cut upstream.
 
-If a named release cannot be determined from the target branch, then
+If a named release cannot be determined from the base branch, then
 `OPENEDX_COMMON_VERSION` is set to `master` and the `main` version of Tutor and
 its plugins is used. This assumption is applied in order to cover the vast
 majority of PRs. The `OPENEDX_COMMON_VERSION` can be
@@ -82,11 +83,11 @@ majority of PRs. The `OPENEDX_COMMON_VERSION` can be
 
 #### 1. Tutor Configurations
 
-Configurations passed directly to tutor and its plugins, such as
+These are configurations passed directly to tutor and its plugins, such as
 `EDX_PLATFORM_REPOSITORY`, `OPENEDX_EXTRA_PIP_REQUIREMENTS`, `SITE_CONFIG` etc.
 
-These configuration settings need to be added to the PR body in the following
-format:
+To override any of those configurations in your sandbox, you can add them
+to the PR body in the following format:
 
     **Settings**
 
@@ -104,10 +105,9 @@ format:
 
 #### 2. Grove Configurations
 
-These configuration settings are used by the sandbox automation app to configure
-things like LMS settings, feature flags, etc., for the sandbox instances. This
-makes use of the [tutor-contrib-grove](https://gitlab.com/opencraft/dev/tutor-contrib-grove/)
-plugin.
+The automation app installs a special tutor plugin called [tutor-contrib-grove](https://gitlab.com/opencraft/dev/tutor-contrib-grove/)
+for all the sandboxes, which gives a few extra configuration options for things
+like the LMS/CMS settings, ENV variables, feature flags, etc.
 
 The available configuration settings are:
 
@@ -123,8 +123,8 @@ and [CMS](https://github.com/overhangio/tutor/blob/c7df56a8133274d8357ef9395a234
 - `GROVE_COMMON_SETTINGS` - Patches [openedx-common-settings](https://github.com/overhangio/tutor/blob/c7df56a8133274d8357ef9395a2347131f5c21df/tutor/templates/apps/openedx/settings/partials/common_all.py#L258C11-L258C34)
 - `GROVE_OPENEDX_AUTH` - Patches [openedx-auth](https://github.com/overhangio/tutor/blob/c7df56a8133274d8357ef9395a2347131f5c21df/tutor/templates/apps/openedx/config/partials/auth.yml#L24)
 
-Similar to tutor configurations, these can be added to the PR body under
-`Settings` and can be mixed with other tutor configurations. Example:
+Similar to the other tutor configurations, these can be added to the PR body
+in the following format:
 
     **Settings**
 
@@ -169,8 +169,12 @@ adding to the PR body the following format:
     **Tutor requirements**
 
     ```txt
+    # override version of default plugin
     pip install git+https://github.com/overhangio/tutor-mfe.git@ulmo
+
+    # install a new plugin
     pip install git+https://github.com/overhangio/tutor-xqueue.git@main
+    # enable the new plugin (always required for new plugins)
     tutor plugins enable xqueue
 
     ```
@@ -233,18 +237,18 @@ its contents.
 
 ## Updating Sandbox
 
-1. Optionally, add or update any [configuration options](#custom-configuration)
-for your sandbox to the PR body.
+1. Add any [custom configurations](#custom-configuration) for your sandbox
+to the PR body as required.
 
 2. Like any other checks (such as unit test checks), the `sandbox_deployment`
 checkrun can be triggered by pushing a commit to your PR. Even an empty commit
 will do if you want to redeploy the sandbox without any other changes in the
 PR - such as if you want to update the sandbox settings.
 
-3. A new `sandbox_deployment` checkrun should be created immediately upon
-pushing a new commit. The steps involved in the update-sandbox pipeline and the
-corresponding updates posted in the `sandbox_deployment` checkrun are exactly
-the same as the [create sandbox](#creating-sandbox) flow.
+3. Once a new commit is pushed, you should expect a new `sandbox_deployment`
+to be created immediately. The steps involved in the update-sandbox pipeline and
+the corresponding updates posted in the `sandbox_deployment` checkrun are
+exactly the same as the [create sandbox](#creating-sandbox) flow.
 
 > [!NOTE]
 > If you push a commit to your PR while the deployment pipeline from your last commit
@@ -298,7 +302,7 @@ and [check runs](https://docs.github.com/en/actions/reference/workflows-and-acti
 
 Based on different pull request events, the app:
 
-1. Creates a new check run in the PR
+1. Creates a new checkrun in the PR
 2. Triggers a sequential list of
 [workflows](https://github.com/open-craft/phd-cluster-template/tree/main/.github/workflows)
 needed to provision a sandbox

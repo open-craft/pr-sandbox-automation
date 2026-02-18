@@ -19,6 +19,11 @@
 >Automated sandbox provisioning will only work for those PRs whose base
 >repo has the Github app installed. This is managed by the
 >[organization owners or repository admins](https://docs.github.com/en/apps/using-github-apps/installing-a-github-app-from-a-third-party#requirements-to-install-a-github-app).
+>
+>Under the `openedx` org, this automation is installed in the
+>[openedx-platform](https://github.com/openedx/openedx-platform) repo as well as
+>all the [frontend-app-*](https://github.com/orgs/openedx/repositories?language=&q=frontend-app-&sort=&type=all)
+>repos.
 
 1. Sandboxes are provisioned with some [default configurations](#default-configurations).
 You can also add any [custom configurations](#custom-configuration) for your sandbox

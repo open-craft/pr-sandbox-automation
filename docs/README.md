@@ -17,7 +17,7 @@
 
 >[!NOTE]
 >Automated sandbox provisioning will only work for those PRs whose base
->repo has the Github app installed. This is managed by the
+>repo(aka. target repo) has the Github app installed. This is managed by the
 >[organization owners or repository admins](https://docs.github.com/en/apps/using-github-apps/installing-a-github-app-from-a-third-party#requirements-to-install-a-github-app).
 >
 >Under the `openedx` org, this automation is installed in the
@@ -63,10 +63,10 @@ failure issues.
 
 ### Default Configurations
 
-Based on the base branch of a PR, the sandbox automation tries to determine
-which named release of Open edX the PR is intended for. Certain things, such as
-`OPENEDX_COMMON_VERSION` and the release version of Tutor and its plugins, are
-configured based on this.
+Based on the base branch(aka. target branch) of a PR, the sandbox automation
+tries to determine which named release of Open edX the PR is intended for.
+Certain things, such as `OPENEDX_COMMON_VERSION` and the release version of
+Tutor and its plugins, are configured based on this.
 
 For a PR to be recognized as targeting a named release, its base branch
 should be of the format
@@ -360,6 +360,6 @@ by pushing a commit to your PR.
 ![Checkrun waiting status](/docs/images/check_run_waiting.png)
 
 > [!TIP]
-> If you notice any issues regularly not mentioned here occurring. Please report
+> If you regularly notice any issue which is not mentioned here. Please report
 > this to the [#grove-pr-watcher](https://openedx.slack.com/archives/C05519HHZKM)
 > Slack channel.

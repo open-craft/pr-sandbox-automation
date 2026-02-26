@@ -5,10 +5,10 @@ A list of constants used through the application
 from enum import StrEnum
 
 MANDATORY_TUTOR_PLUGINS = {
-    "tutor-contrib-drydock": "drydock",
-    "tutor-contrib-grove": "grove",
-    "tutor-mfe": "mfe",
-    "tutor-forum": "forum",
+    "tutor-contrib-drydock": ["drydock"],
+    "tutor-contrib-grove": ["grove-mfes", "grove-config"],
+    "tutor-mfe": ["mfe"],
+    "tutor-forum": ["forum"],
 }
 
 NAMED_RELEASE_ULMO = "ulmo"
@@ -25,7 +25,7 @@ NAMED_RELEASE_TUTOR_REQUIREMENTS: dict[str, list[str]] = {
         "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove@kaustav/phd-compatibility",
         "pip install git+https://github.com/overhangio/tutor-mfe.git@ulmo",
         "pip install git+https://github.com/overhangio/tutor-forum.git@ulmo",
-        "tutor plugins enable drydock grove mfe forum",
+        "tutor plugins enable drydock grove-mfes grove-config mfe forum",
         "tutor config save",
     ],
     NAMED_RELEASE_MASTER: [
@@ -33,7 +33,7 @@ NAMED_RELEASE_TUTOR_REQUIREMENTS: dict[str, list[str]] = {
         "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove@kaustav/phd-compatibility",
         "pip install git+https://github.com/overhangio/tutor-mfe.git@main",
         "pip install git+https://github.com/overhangio/tutor-forum.git@main",
-        "tutor plugins enable drydock grove mfe forum",
+        "tutor plugins enable drydock grove-mfes grove-config mfe forum",
         "tutor config save",
     ],
 }

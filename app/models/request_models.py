@@ -204,11 +204,20 @@ class PullRequest(BaseModel):
                 for plugin in missing_plugins
             ]
             # Get the commands to enable the missing plugins
-            enable_missing_plugins = [
-                f"tutor plugins enable {MANDATORY_TUTOR_PLUGINS[plugin]}"
+            missing_plugin_names = [
+                plugin_name
                 for plugin in missing_plugins
+                for plugin_name in MANDATORY_TUTOR_PLUGINS[plugin]
             ]
-            return install_missing_plugins + enable_missing_plugins + tutor_requirements
+            enable_missing_plugins = [
+                f"tutor plugins enable {' '.join(missing_plugin_names)}"
+            ]
+            return (
+                install_missing_plugins
+                + enable_missing_plugins
+                + tutor_requirements
+                + ["tutor config save"]
+            )
         return self.named_release.tutor_requirements
 
     @property

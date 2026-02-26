@@ -6,85 +6,40 @@ from enum import StrEnum
 
 MANDATORY_TUTOR_PLUGINS = {
     "tutor-contrib-drydock": "drydock",
-    # "tutor-contrib-harmony-plugin": "k8s_harmony",
-    # "tutor-contrib-mfe-extensions": "mfe-extensions",
+    "tutor-contrib-grove": "grove",
+    "tutor-mfe": "mfe",
+    "tutor-forum": "forum",
 }
 
-NAMED_RELEASE_SUMAC = "sumac"
-NAMED_RELEASE_TEAK = "teak"
 NAMED_RELEASE_ULMO = "ulmo"
 NAMED_RELEASE_MASTER = "master"  # Special case for master branch
 
 NAMED_RELEASE_LATEST_COMMON_VERSIONS: dict[str, str] = {
-    NAMED_RELEASE_SUMAC: "open-release/sumac.master",
-    NAMED_RELEASE_TEAK: "release/teak",
     NAMED_RELEASE_ULMO: "release/ulmo",
     NAMED_RELEASE_MASTER: "master",
 }
 
 NAMED_RELEASE_TUTOR_REQUIREMENTS: dict[str, list[str]] = {
-    NAMED_RELEASE_SUMAC: [
-        "tutor>=19,<20",
-        "tutor-discovery>=19,<20",
-        "tutor-ecommerce>=19,<20",
-        "tutor-mfe>=19,<20",
-        "tutor-xqueue>=19,<20",
-        "git+https://github.com/overhangio/tutor-forum.git@release",  # change to tag when new tag after v19.0.0 is released.
-        "git+https://gitlab.com/opencraft/dev/tutor-contrib-grove.git@main",
-        "git+https://github.com/hastexo/tutor-contrib-s3.git@v2.1.0",
-        "git+https://github.com/openedx/openedx-k8s-harmony.git@main#egg=tutor-contrib-harmony&subdirectory=tutor-contrib-harmony-plugin",
-    ],
-    NAMED_RELEASE_TEAK: [
-        # "pip install tutor-contrib-drydock",
-        # "pip install tutor-mfe==20.0.0",
-        # "pip install tutor-forum==20.0.0",
-        # # "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove.git@main",
-        # "pip install git+https://github.com/hastexo/tutor-contrib-s3.git@v2.3.1",
-        # # "pip install git+https://github.com/openedx/openedx-k8s-harmony.git@main#egg=tutor-contrib-harmony&subdirectory=tutor-contrib-harmony-plugin",
-        # "tutor plugins enable drydock mfe forum s3",
-        # "tutor config save",
-        "pip install tutor-contrib-drydock",
-        "tutor plugins index add https://raw.githubusercontent.com/eduNEXT/tutor-plugin-indexes/teak/",
-        "tutor plugins install forum mfe mfe-extensions",
-        "tutor plugins enable drydock forum mfe mfe-extensions",
-        "tutor picasso enable-private-packages",
-    ],
     NAMED_RELEASE_ULMO: [
         "pip install tutor-contrib-drydock",
-        # "git+https://github.com/overhangio/tutor.git@ulmo",
-        "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove@main",
+        "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove@kaustav/phd-compatibility",
         "pip install git+https://github.com/overhangio/tutor-mfe.git@ulmo",
         "pip install git+https://github.com/overhangio/tutor-forum.git@ulmo",
-        # "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove.git@021249b92a1027792424206365786b22a3820cbb",  # change this when this issue is fixed https://forum.opencraft.com/t/the-future-of-simple-theme/1985/9?u=kaustav
-        # "pip install git+https://github.com/open-craft/tutor-contrib-s3.git@kaustav/add_support_for_tutor_21",
-        # "pip install git+https://github.com/open-craft/openedx-k8s-harmony.git@kaustav/support_tutor_21#egg=tutor-contrib-harmony&subdirectory=tutor-contrib-harmony-plugin",
-        "tutor plugins enable drydock mfe forum grove-mfes",
-        # "tutor plugins enable grove",
-        # "tutor plugins enable k8s_harmony",
+        "tutor plugins enable drydock grove mfe forum",
         "tutor config save",
     ],
     NAMED_RELEASE_MASTER: [
         "pip install tutor-contrib-drydock",
-        # "git+https://github.com/overhangio/tutor.git@main",
         "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove@kaustav/phd-compatibility",
         "pip install git+https://github.com/overhangio/tutor-mfe.git@main",
         "pip install git+https://github.com/overhangio/tutor-forum.git@main",
-        # "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove.git@main",
-        # "pip install git+https://github.com/hastexo/tutor-contrib-s3.git@main",
-        # "pip install git+https://github.com/openedx/openedx-k8s-harmony.git@main#egg=tutor-contrib-harmony&subdirectory=tutor-contrib-harmony-plugin",
-        "tutor plugins enable drydock mfe forum grove-mfes grove-config grove-simple-theme",
-        # "tutor plugins enable grove-simple-theme",
-        # "tutor plugins enable grove",
-        # "tutor plugins enable k8s_harmony",
+        "tutor plugins enable drydock grove mfe forum",
         "tutor config save",
-        "tutor generate-tokens",
     ],
 }
 
 
 NAMED_RELEASE_TUTOR_VERSIONS: dict[str, str] = {
-    NAMED_RELEASE_SUMAC: "v19.0.5",
-    NAMED_RELEASE_TEAK: "v20.0.2",
     NAMED_RELEASE_ULMO: "ulmo",
     NAMED_RELEASE_MASTER: "main",
 }
@@ -96,8 +51,6 @@ class NamedRelease(StrEnum):
     watcher.
     """
 
-    SUMAC = NAMED_RELEASE_SUMAC
-    TEAK = NAMED_RELEASE_TEAK
     ULMO = NAMED_RELEASE_ULMO
     MASTER = NAMED_RELEASE_MASTER
     UNKNOWN = "unknown"

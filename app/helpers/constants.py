@@ -9,6 +9,7 @@ MANDATORY_TUTOR_PLUGINS = {
     "tutor-contrib-grove": ["grove-mfes", "grove-config"],
     "tutor-mfe": ["mfe"],
     "tutor-forum": ["forum"],
+    "tutor-contrib-s3": ["s3"],
 }
 
 NAMED_RELEASE_ULMO = "ulmo"
@@ -25,7 +26,8 @@ NAMED_RELEASE_TUTOR_REQUIREMENTS: dict[str, list[str]] = {
         "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove@kaustav/phd-compatibility",
         "pip install git+https://github.com/overhangio/tutor-mfe.git@ulmo",
         "pip install git+https://github.com/overhangio/tutor-forum.git@ulmo",
-        "tutor plugins enable drydock grove-mfes grove-config mfe forum",
+        "pip install git+https://github.com/cleura/tutor-contrib-s3.git@v2.5.0",
+        "tutor plugins enable drydock grove-mfes grove-config mfe forum s3",
         "tutor config save",
     ],
     NAMED_RELEASE_MASTER: [
@@ -33,7 +35,8 @@ NAMED_RELEASE_TUTOR_REQUIREMENTS: dict[str, list[str]] = {
         "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove@kaustav/phd-compatibility",
         "pip install git+https://github.com/overhangio/tutor-mfe.git@main",
         "pip install git+https://github.com/overhangio/tutor-forum.git@main",
-        "tutor plugins enable drydock grove-mfes grove-config mfe forum",
+        "pip install git+https://github.com/hastexo/tutor-contrib-s3.git@main",
+        "tutor plugins enable drydock grove-mfes grove-config mfe forum s3",
         "tutor config save",
     ],
 }

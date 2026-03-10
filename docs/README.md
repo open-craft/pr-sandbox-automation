@@ -161,6 +161,7 @@ the given PR. For example, if a new plugin is developed.
 The standard set of tutor plugins that are added and
 enabled to all sandboxes are:
 
+- [s3](https://github.com/hastexo/tutor-contrib-s3)
 - [drydock](https://github.com/eduNEXT/drydock)
 - [tutor-mfe](https://github.com/overhangio/tutor-mfe)
 - [tutor-forum](https://github.com/overhangio/tutor-forum)
@@ -360,6 +361,9 @@ by pushing a commit to your PR.
 ![Checkrun waiting status](/docs/images/check_run_waiting.png)
 
 > [!TIP]
-> If you regularly notice any issue which is not mentioned here. Please report
-> this to the [#grove-pr-watcher](https://openedx.slack.com/archives/C05519HHZKM)
+> If you regularly notice any issue which is not mentioned here, please check
+> the list of known/reported [issues in Github](https://github.com/open-craft/pr-sandbox-automation/issues).
+> Please feel free to create a new issue there or add comments to an
+> existing issue, or, report the issue to
+> the [#grove-pr-watcher](https://openedx.slack.com/archives/C05519HHZKM)
 > Slack channel.

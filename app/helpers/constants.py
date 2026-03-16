@@ -24,8 +24,8 @@ NAMED_RELEASE_TUTOR_REQUIREMENTS: dict[str, list[str]] = {
     NAMED_RELEASE_ULMO: [
         "pip install tutor-contrib-drydock",
         "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove@kaustav/phd-compatibility",
-        "pip install git+https://github.com/overhangio/tutor-mfe.git@ulmo",
-        "pip install git+https://github.com/overhangio/tutor-forum.git@ulmo",
+        "pip install git+https://github.com/overhangio/tutor-mfe.git@v21.0.0",
+        "pip install git+https://github.com/overhangio/tutor-forum.git@v21.0.0",
         "pip install git+https://github.com/cleura/tutor-contrib-s3.git@v2.5.0",
         "tutor plugins enable drydock grove-mfes grove-config mfe forum s3",
         "tutor config save",
@@ -43,7 +43,7 @@ NAMED_RELEASE_TUTOR_REQUIREMENTS: dict[str, list[str]] = {
 
 
 NAMED_RELEASE_TUTOR_VERSIONS: dict[str, str] = {
-    NAMED_RELEASE_ULMO: "ulmo",
+    NAMED_RELEASE_ULMO: "v21.0.2",
     NAMED_RELEASE_MASTER: "main",
 }
 

@@ -154,14 +154,16 @@ def get_argocd_run_summary(
         in_progress=False,
         failed=False,
     )
+    lms_host = sandbox_config["LMS_HOST"]
+    cms_host = sandbox_config["CMS_HOST"]
     summary += f"\n### {_get_run_status_emoji(in_progress, WorkFlowConclusion.FAILURE if failed else WorkFlowConclusion.SUCCESS)} ArgoCD Sync"
     summary += f"\n{INDENT} **Go to [ArgoCD UI]({config.argocd_app_url}/{application_name}) to check the sync status and to access pod logs**"
     summary += f"\n{INDENT} ArgoCD Login: `{config.argocd_readonly_username}` / `{get_secret('pr-sandbox-argocd-readonly-user-password')}`"
     if not in_progress and not failed:
         summary += "\n\n### 🚀 Deployment Completed Successfully"
         summary += "\n\nSandbox Links:"
-        summary += f"\n{INDENT}🎓 [LMS](https://{sandbox_config['LMS_HOST']})"
-        summary += f"\n{INDENT}📝 [Studio](https://{sandbox_config['CMS_HOST']})"
+        summary += f"\n{INDENT}🎓 [LMS](https://{lms_host}) ([admin](https://{lms_host}/admin))"
+        summary += f"\n{INDENT}📝 [Studio](https://{cms_host}) ([admin](https://{cms_host}/admin))"
         summary += f"\n{INDENT}🔐 Login: `openedx` / `openedx`"
 
     return summary

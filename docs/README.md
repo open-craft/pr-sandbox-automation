@@ -23,7 +23,9 @@
 >Under the `openedx` org, this automation is installed in the
 >[openedx-platform](https://github.com/openedx/openedx-platform) repo as well as
 >all the [frontend-app-*](https://github.com/orgs/openedx/repositories?language=&q=frontend-app-&sort=&type=all)
->repos.
+>repos. To ensure that we have enough sandbox hosting resources to support
+>active projects, ⚠️  **please check with an Axim engineer before creating new**
+>**sandboxes in the `openedx` org.** ⚠️  Thanks!
 
 1. Sandboxes are provisioned with some [default configurations](#default-configurations).
 You can also add any [custom configurations](#custom-configuration) for your sandbox

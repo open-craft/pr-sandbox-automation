@@ -7,7 +7,7 @@
 
 - [Creating Sandbox](#creating-sandbox)
 - [Sandbox Configuration](#sandbox-configuration)
-- [Checking Sandbox Logs](#checking-sandbox-logs)
+- [Checking Sandbox Logs / Config / SSH](#checking-sandbox-logs)
 - [Updating Sandbox](#updating-sandbox)
 - [Destroying and Recreating Sandbox](#destroying-and-recreating-sandboxes)
 - [About the automation app](#about-the-automation-app)
@@ -227,7 +227,9 @@ the hierarchical tree, making it easier to spot the LMS/CMS service resources.
 To check the logs of any service, click on either the deployment resource or
 the replicate set or the pod of that service. This should open up a pop-up with
 live manifest and other details for that resource. Click on the "LOGS" tab at
-the top to see the live logs rolling.
+the top to see the live logs rolling. Additionally, if you are using privileged
+ArgoCD credentials, then click on "TERMINAL" at the top to access a shell on
+the pod.
 ![ArgoCD CMS service](/docs/images/argo_cd_cms_service.png)
 
 To check the configurations applied to a service:

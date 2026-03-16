@@ -341,7 +341,7 @@ by the PR author. The source repo/branch of the PR is configured as a custom MFE
 point in time in the sandbox cluster. If this limit is reached, any new sandbox
 creation will fail with the message `Sandbox deployment has been cancelled since
 the maximum number of sandboxes are already deployed`. Please ping in the
-[#grove-pr-watcher](https://openedx.slack.com/archives/C05519HHZKM) Slack channel
+[#pr-sanboxes](https://openedx.slack.com/archives/C05519HHZKM) Slack channel
 in this case.
 2. The destroy sandbox pipeline sometimes fails due to the DigitalOcean's API
 related to MySQL being flaky and also due to Kubernetes namespace taking a long
@@ -350,7 +350,7 @@ where some sandbox resources are deleted and some are not. This is only an issue
 for PR authors if they are trying to [recreate a sandbox](#destroying-and-recreating-sandboxes).
 The "Generating Initial Sandbox Configs" step might fail in this case if the destroy
 pipeline had failed earlier. Please ping in the
-[#grove-pr-watcher](https://openedx.slack.com/archives/C05519HHZKM) Slack channel
+[#pr-sandboxes](https://openedx.slack.com/archives/C05519HHZKM) Slack channel
 in this case.
 3. The automation app posts a "Waiting for status of next steps" message between
 deployment steps. This message means that the last step was completed
@@ -367,5 +367,5 @@ by pushing a commit to your PR.
 > the list of known/reported [issues in Github](https://github.com/open-craft/pr-sandbox-automation/issues).
 > Please feel free to create a new issue there or add comments to an
 > existing issue, or, report the issue to
-> the [#grove-pr-watcher](https://openedx.slack.com/archives/C05519HHZKM)
+> the [#pr-sandboxes](https://openedx.slack.com/archives/C05519HHZKM)
 > Slack channel.

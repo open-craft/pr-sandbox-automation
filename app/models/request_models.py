@@ -160,6 +160,7 @@ class PullRequest(BaseModel):
     author: str = Field(alias=AliasPath("user", "login"))
     body: str | None = None
     fork_name: str = Field(alias=AliasPath("head", "repo", "full_name"))
+    repo_full_name: str = Field(alias=AliasPath("base", "repo", "full_name"))
     repo_name: str = Field(alias=AliasPath("base", "repo", "name"))
     repo_html_url: str = Field(alias=AliasPath("base", "repo", "html_url"))
     branch_name: str = Field(alias=AliasPath("head", "ref"))
@@ -243,7 +244,7 @@ class PullRequest(BaseModel):
         """
         Returns a resonable MFE name based on the repository name.
         """
-        return self.fork_name.split(MFE_REPO_NAME_PREFIX, 1)[-1]
+        return self.repo_full_name.split(MFE_REPO_NAME_PREFIX, 1)[-1]
 
     def __str__(self) -> str:
         """

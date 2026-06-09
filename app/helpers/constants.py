@@ -35,7 +35,7 @@ NAMED_RELEASE_TUTOR_REQUIREMENTS: dict[str, list[str]] = {
         "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove@kaustav/phd-compatibility",
         "pip install git+https://github.com/overhangio/tutor-mfe.git@main",
         "pip install git+https://github.com/overhangio/tutor-forum.git@main",
-        "pip install git+https://github.com/hastexo/tutor-contrib-s3.git@main",
+        "pip install git+https://github.com/cleura/tutor-contrib-s3.git@main",
         "tutor plugins enable drydock grove-mfes grove-config mfe forum s3",
         "tutor config save",
     ],

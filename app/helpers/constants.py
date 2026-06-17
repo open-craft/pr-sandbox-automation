@@ -13,10 +13,12 @@ MANDATORY_TUTOR_PLUGINS = {
 }
 
 NAMED_RELEASE_ULMO = "ulmo"
+NAMED_RELEASE_VERAWOOD = "verawood"
 NAMED_RELEASE_MASTER = "master"  # Special case for master branch
 
 NAMED_RELEASE_LATEST_COMMON_VERSIONS: dict[str, str] = {
     NAMED_RELEASE_ULMO: "release/ulmo",
+    NAMED_RELEASE_VERAWOOD: "release/verawood",
     NAMED_RELEASE_MASTER: "master",
 }
 
@@ -27,6 +29,15 @@ NAMED_RELEASE_TUTOR_REQUIREMENTS: dict[str, list[str]] = {
         "pip install git+https://github.com/overhangio/tutor-mfe.git@v21.0.0",
         "pip install git+https://github.com/overhangio/tutor-forum.git@v21.0.0",
         "pip install git+https://github.com/cleura/tutor-contrib-s3.git@v2.5.0",
+        "tutor plugins enable drydock grove-mfes grove-config mfe forum s3",
+        "tutor config save",
+    ],
+    NAMED_RELEASE_VERAWOOD: [
+        "pip install git+https://github.com/eduNEXT/drydock.git@verawood#egg=tutor-contrib-drydock",
+        "pip install git+https://gitlab.com/opencraft/dev/tutor-contrib-grove@main",
+        "pip install git+https://github.com/overhangio/tutor-mfe.git@verawood",
+        "pip install git+https://github.com/overhangio/tutor-forum.git@verawood",
+        "pip install git+https://github.com/cleura/tutor-contrib-s3.git@955f8441059aa1bcb498ff1db25f06b33219ea07",
         "tutor plugins enable drydock grove-mfes grove-config mfe forum s3",
         "tutor config save",
     ],
@@ -43,7 +54,8 @@ NAMED_RELEASE_TUTOR_REQUIREMENTS: dict[str, list[str]] = {
 
 
 NAMED_RELEASE_TUTOR_VERSIONS: dict[str, str] = {
-    NAMED_RELEASE_ULMO: "v21.0.2",
+    NAMED_RELEASE_ULMO: "v21.0.7",
+    NAMED_RELEASE_VERAWOOD: "verawood",
     NAMED_RELEASE_MASTER: "main",
 }
 
@@ -55,6 +67,7 @@ class NamedRelease(StrEnum):
     """
 
     ULMO = NAMED_RELEASE_ULMO
+    VERAWOOD = NAMED_RELEASE_VERAWOOD
     MASTER = NAMED_RELEASE_MASTER
     UNKNOWN = "unknown"
 

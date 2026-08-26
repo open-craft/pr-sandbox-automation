@@ -55,7 +55,7 @@ NAMED_RELEASE_TUTOR_REQUIREMENTS: dict[str, list[str]] = {
 
 NAMED_RELEASE_TUTOR_VERSIONS: dict[str, str] = {
     NAMED_RELEASE_ULMO: "v21.0.7",
-    NAMED_RELEASE_VERAWOOD: "verawood",
+    NAMED_RELEASE_VERAWOOD: "v22.0.1",
     NAMED_RELEASE_MASTER: "main",
 }
 

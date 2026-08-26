@@ -98,6 +98,8 @@ def _update_instance(pull_request: PullRequest, sandbox: Sandbox) -> None:
         "S3_HOST": urlparse(
             existing_sandbox_config.get("STORAGE_ENDPOINT_URL", "")
         ).hostname,
+        "GROVE_REDIS_VOLUME_SIZE": "1Gi",
+        "RUN_REDIS": True,
     }
 
     # Loads extra configs such as SMTP credentials which are not provided by the PHD stack yet

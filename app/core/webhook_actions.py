@@ -100,6 +100,7 @@ def _update_instance(pull_request: PullRequest, sandbox: Sandbox) -> None:
         ).hostname,
         "GROVE_REDIS_VOLUME_SIZE": "1Gi",
         "RUN_REDIS": True,
+        "DRYDOCK_INGRESS_CLASS": "nginx",
     }
 
     # Loads extra configs such as SMTP credentials which are not provided by the PHD stack yet

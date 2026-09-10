@@ -4,7 +4,6 @@ Set of funtions to orchestrate create/update/delete instance workflows
 
 import logging
 from sqlmodel import select
-from urllib.parse import urlparse
 import yaml
 
 from app.core.check_runs import (
@@ -87,17 +86,11 @@ def _update_instance(pull_request: PullRequest, sandbox: Sandbox) -> None:
     Generates custom configs and trigger sandbox config update workflow.
     """
     logger.info("Updating sandbox %s", pull_request.sandbox_name)
-    existing_sandbox_config = sandbox.tutor_config.content_as_dict
 
     instance_config = {
         "OPENEDX_COMMON_VERSION": pull_request.named_release.latest_common_version,
         "PICASSO_EXTRA_COMMANDS": pull_request.tutor_requirements,
         "GROVE_CREATE_DEMO_USER": True,
-        "S3_STORAGE_BUCKET": existing_sandbox_config.get("STORAGE_BUCKET_NAME", ""),
-        "S3_REGION": existing_sandbox_config.get("STORAGE_REGION", ""),
-        "S3_HOST": urlparse(
-            existing_sandbox_config.get("STORAGE_ENDPOINT_URL", "")
-        ).hostname,
         "GROVE_REDIS_VOLUME_SIZE": "1Gi",
         "RUN_REDIS": True,
         "DRYDOCK_INGRESS_CLASS": "nginx",

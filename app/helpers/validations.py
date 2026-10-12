@@ -75,7 +75,7 @@ async def validate_auth(request: Request):
         raise UnactionableRequestException(
             f"{AUTHORIZATION_HEADER} header missing or malformed"
         )
-
+    print(request_authorization)
     b64encoded_password = request_authorization[len(AUTHORIZATION_PREFIX) :]
     appened_password = b64decode(b64encoded_password).decode("utf8")
     auth_password = appened_password.split(":", 1)[-1]
